@@ -14,35 +14,35 @@
 # limitations under the License.
 # makefile-generator v1.0.3
 #
-TARGET := hw_emu
+TARGET := hw
 PLATFORM := xilinx_u55c_gen3x16_xdma_3_202210_1
-EXECUTABLE = ./adder_xrt
-KERNEL = adder
+EXECUTABLE = ./merge_host
+KERNEL = merge
 HOST_FILE = host.cpp
 RUN_ARGS ?=
 DEBUG := no
 
 ############################## Help Section ##############################
 help:
-	$(ECHO) "Makefile Usage:"
-	$(ECHO) "  make all TARGET=<sw_emu/hw_emu/hw> PLATFORM=<FPGA platform>"
-	$(ECHO) "      Command to generate the design for specified Target and Shell."
-	$(ECHO) ""
-	$(ECHO) "  make run TARGET=<sw_emu/hw_emu/hw> PLATFORM=<FPGA platform>"
-	$(ECHO) "      Command to run application in emulation."
-	$(ECHO) ""
-	$(ECHO) "  make build TARGET=<sw_emu/hw_emu/hw> PLATFORM=<FPGA platform>"
-	$(ECHO) "      Command to build xclbin application."
-	$(ECHO) ""
-	$(ECHO) "  make host"
-	$(ECHO) "      Command to build host application."
-	$(ECHO) ""
-	$(ECHO) "  make clean "
-	$(ECHO) "      Command to remove the generated non-hardware files."
-	$(ECHO) ""
-	$(ECHO) "  make cleanall"
-	$(ECHO) "      Command to remove all the generated files."
-	$(ECHO) ""
+	echo "Makefile Usage:"
+	echo "  make all TARGET=<sw_emu/hw_emu/hw> PLATFORM=<FPGA platform>"
+	echo "      Command to generate the design for specified Target and Shell."
+	echo ""
+	echo "  make run TARGET=<sw_emu/hw_emu/hw> PLATFORM=<FPGA platform>"
+	echo "      Command to run application in emulation."
+	echo ""
+	echo "  make build TARGET=<sw_emu/hw_emu/hw> PLATFORM=<FPGA platform>"
+	echo "      Command to build xclbin application."
+	echo ""
+	echo "  make host"
+	echo "      Command to build host application."
+	echo ""
+	echo "  make clean "
+	echo "      Command to remove the generated non-hardware files."
+	echo ""
+	echo "  make cleanall"
+	echo "      Command to remove all the generated files."
+	echo ""
 
 ############################## Setting up Project Variables ##############################
 VPP_LDFLAGS :=
@@ -73,7 +73,7 @@ LDFLAGS += -luuid -lxrt_coreutil
 
 ############################## Setting up Kernel Variables ##############################
 # Kernel compiler global settings
-VPP_FLAGS += --save-temps 
+VPP_FLAGS += --save-temps --vivado.impl.jobs 32 --vivado.synth.jobs 32 --hls.jobs 32
 ifneq ($(TARGET), hw)
 VPP_FLAGS += -g
 endif

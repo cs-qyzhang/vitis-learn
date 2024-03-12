@@ -3,5 +3,8 @@
         "-I/opt/xilinx/Vitis_HLS/2023.1/include",
         "-I/opt/xilinx/xrt/include",
         "-std=c++17"
-    ]
+    ],
+    "files.exclude": {
+        // "**/v++_*.log": true,
+    }
 }
