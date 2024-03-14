@@ -25,7 +25,7 @@
 #include "xrt/xrt_device.h"
 #include "xrt/xrt_kernel.h"
 
-#define DATA_SIZE 128
+#define DATA_SIZE 4096*1024
 
 void generate_random(int *vec, int size) {
     static std::random_device rd;

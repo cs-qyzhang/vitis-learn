@@ -14,7 +14,7 @@
 # limitations under the License.
 # makefile-generator v1.0.3
 #
-TARGET := hw_emu
+TARGET := hw
 PLATFORM := xilinx_u55c_gen3x16_xdma_3_202210_1
 EXECUTABLE = ./adder_xrt
 KERNEL = adder

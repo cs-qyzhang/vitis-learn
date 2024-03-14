@@ -19,6 +19,7 @@ PLATFORM := xilinx_u55c_gen3x16_xdma_3_202210_1
 EXECUTABLE = ./merge_host
 KERNEL = merge
 HOST_FILE = host.cpp
+VITIS_CONFIG = ./vitis.cfg
 RUN_ARGS ?=
 DEBUG := no
 
@@ -45,7 +46,7 @@ help:
 	echo ""
 
 ############################## Setting up Project Variables ##############################
-VPP_LDFLAGS :=
+VPP_LDFLAGS := --vivado.prop run.impl_1.strategy=Flow_RuntimeOptimized
 #Generates debug summary report
 ifeq ($(DEBUG), yes)
 VPP_LDFLAGS += --dk list_ports
@@ -73,7 +74,9 @@ LDFLAGS += -luuid -lxrt_coreutil
 
 ############################## Setting up Kernel Variables ##############################
 # Kernel compiler global settings
-VPP_FLAGS += --save-temps --vivado.impl.jobs 32 --vivado.synth.jobs 32 --hls.jobs 32
+VPP_FLAGS += --save-temps --config $(VITIS_CONFIG)
+#--optimize quick
+#--vivado.impl.jobs 32 --vivado.synth.jobs 32 --hls.jobs 32
 ifneq ($(TARGET), hw)
 VPP_FLAGS += -g
 endif
@@ -94,13 +97,13 @@ build: $(BUILD_DIR)/$(KERNEL).xclbin
 xclbin: build
 
 ############################## Setting Rules for Binary Containers (Building Kernels) ##############################
-$(TEMP_DIR)/$(KERNEL).xo: $(KERNEL).cpp
+$(TEMP_DIR)/$(KERNEL).xo: $(KERNEL).cpp $(VITIS_CONFIG)
 	mkdir -p $(TEMP_DIR)
 	v++ -c $(VPP_FLAGS) -t $(TARGET) --platform $(PLATFORM) -k $(KERNEL) --temp_dir $(TEMP_DIR)  -I'$(<D)' -o'$@' '$<'
 
-$(BUILD_DIR)/$(KERNEL).xclbin: $(TEMP_DIR)/$(KERNEL).xo
+$(BUILD_DIR)/$(KERNEL).xclbin: $(TEMP_DIR)/$(KERNEL).xo $(VITIS_CONFIG)
 	mkdir -p $(BUILD_DIR)
-	v++ -l $(VPP_FLAGS) $(VPP_LDFLAGS) -t $(TARGET) --platform $(PLATFORM) --temp_dir $(TEMP_DIR) -o'$(LINK_OUTPUT)' $(+)
+	v++ -l $(VPP_FLAGS) $(VPP_LDFLAGS) -t $(TARGET) --platform $(PLATFORM) --temp_dir $(TEMP_DIR) -o'$(LINK_OUTPUT)' $<
 	v++ -p $(LINK_OUTPUT) $(VPP_FLAGS) -t $(TARGET) --platform $(PLATFORM) --package.out_dir $(PACKAGE_OUT) -o $(BUILD_DIR)/$(KERNEL).xclbin
 
 ############################## Setting Rules for Host (Building Host Executable) ##############################
